@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from "react-router-dom";
 import {
   Scale,
   BookOpen,
@@ -10,7 +11,8 @@ import {
   Users,
   AlertCircle,
   BookMarked,
-  Upload
+  Upload,
+  BookOpenText
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import UploadFiles from './UploadFiles.jsx';
@@ -18,11 +20,26 @@ import AILawAssistant from './AILawAssistant.jsx';
 import LegalRightsAwareness from './LegalRightsAwareness.jsx';
 import LawyersList from './LawyersList.jsx';
 import CaseStatusTracking from './CaseStatusTracking.jsx';
+import PopularCasesAndJudgement from './PopularCasesAndJudgements.jsx'
 import styles from './Dashboard.module.css';
+
 
 export default function Dashboard() {
   const { profile, signOut } = useAuth();
   const [currentPage, setCurrentPage] = useState('dashboard');
+  /* ✅ Bar Council verification state */
+const [barCouncilId, setBarCouncilId] = useState(profile?.barCouncilId || '');
+const [isVerified, setIsVerified] = useState(!!profile?.barCouncilId);
+
+const handleVerifyBarId = () => {
+  if (barCouncilId.trim() === '1234') {
+    setIsVerified(true);
+  }
+   else {
+    alert('Please enter a valid Bar Council ID');
+  }
+};
+
 
   const handleSignOut = async () => {
     try {
@@ -42,6 +59,9 @@ export default function Dashboard() {
 
   if (currentPage === 'legalRights') {
     return <LegalRightsAwareness onBack={() => setCurrentPage('dashboard')} />;
+  }
+  if (currentPage === 'popularCase') {
+    return <PopularCasesAndJudgement onBack={() => setCurrentPage('dashboard')} />;
   }
 
   if (currentPage === 'lawyersList') {
@@ -84,7 +104,7 @@ export default function Dashboard() {
       <nav className={styles.navigation}>
         <div className={styles.navigationInner}>
           <div className={styles.navList}>
-            {['Home', 'Constitution Law', 'Statutory Law', 'Administrative Law', 'Case Law'].map((item) => (
+            {['Home', <Link to = '/ConstitutionLaw'>Constitution Law</Link>, 'Statutory Law', 'Administrative Law', 'Case Law'].map((item) => (
               <button
                 key={item}
                 className={styles.navItem}
@@ -284,6 +304,19 @@ export default function Dashboard() {
                   <p>Helpline Number Service</p>
                 </div>
               </div>
+              <button
+                onClick={() => setCurrentPage('popularCase')}
+                className={`${styles.serviceCard} ${styles.serviceCardButton}`}
+              >
+                <div className={styles.serviceIconBox}>
+                  <BookOpenText className={styles.serviceIcon} />
+                </div>
+                <div className={styles.serviceContent}>
+                  <h3>Popular Cases and Judgements</h3>
+                  <p>Highlight important verdicts that changed legal understanding and impacted society.</p>
+                </div>
+              </button>
+              
             </div>
 
             <div className={styles.welcomeSection}>
@@ -306,34 +339,61 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-
             {profile?.role === 'lawyer' && (
-              <div className={styles.lawyerDashboard}>
-                <h3>Lawyer Dashboard</h3>
-                <div className={styles.lawyerGrid}>
-                  <div className={styles.lawyerStatCard}>
-                    <Users />
-                    <h4>My Clients</h4>
-                    <div className={styles.statNumber}>0</div>
-                  </div>
-                  <div className={styles.lawyerStatCard}>
-                    <FileText />
-                    <h4>Active Cases</h4>
-                    <div className={styles.statNumber}>0</div>
-                  </div>
-                  <div className={styles.lawyerStatCard}>
-                    <Calendar />
-                    <h4>Upcoming Hearings</h4>
-                    <div className={styles.statNumber}>0</div>
-                  </div>
-                  <div className={styles.lawyerStatCard}>
-                    <MessageCircle />
-                    <h4>Consultations</h4>
-                    <div className={styles.statNumber}>0</div>
-                  </div>
-                </div>
-              </div>
-            )}
+  isVerified ? (
+
+    /* ✅ SHOW LAWYER DASHBOARD */
+    <div className={styles.lawyerDashboard}>
+      <h3>Lawyer Dashboard</h3>
+      <div className={styles.lawyerGrid}>
+        <div className={styles.lawyerStatCard}>
+          <Users />
+          <h4>My Clients</h4>
+          <div className={styles.statNumber}>0</div>
+        </div>
+
+        <div className={styles.lawyerStatCard}>
+          <FileText />
+          <h4>Active Cases</h4>
+          <div className={styles.statNumber}>0</div>
+        </div>
+
+        <div className={styles.lawyerStatCard}>
+          <Calendar />
+          <h4>Upcoming Hearings</h4>
+          <div className={styles.statNumber}>0</div>
+        </div>
+
+        <div className={styles.lawyerStatCard}>
+          <MessageCircle />
+          <h4>Consultations</h4>
+          <div className={styles.statNumber}>0</div>
+        </div>
+      </div>
+    </div>
+
+  ) :  (
+
+    /* ✅ ASK FOR BAR COUNCIL ID */
+    <div className={styles.lawyerDashboard}>
+      <h3>Bar Council Verification Required</h3>
+    
+      <input
+        type="text"
+        placeholder="Enter Bar Council ID"
+        value={barCouncilId}
+        onChange={(e) => setBarCouncilId(e.target.value)}
+        style={{ padding: '8px', marginRight: '10px' }}
+      />
+
+      <button onClick={handleVerifyBarId}>
+        Verify
+      </button>
+    </div>
+
+  )
+)}
+
           </main>
         </div>
       </div>

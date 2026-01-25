@@ -1,6 +1,10 @@
 import { AuthProvider, useAuth } from './contexts/AuthContext.jsx';
 import LoginPage from './components/LoginPage.jsx';
 import Dashboard from './components/Dashboard.jsx';
+import ConstitutionLaw from './components/ConstitutionLaw.jsx';
+
+import { Routes, Route } from "react-router-dom";
+
 
 function AppContent() {
   const { user, loading } = useAuth();
@@ -8,16 +12,30 @@ function AppContent() {
   if (loading) {
     return (
       <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ animation: 'spin 1s linear infinite', width: '4rem', height: '4rem', borderRadius: '50%', borderWidth: '4px', borderStyle: 'solid', borderColor: '#e5e7eb', borderBottomColor: '#b45309', margin: '0 auto 1rem' }}></div>
-          <p style={{ color: '#4b5563' }}>Loading...</p>
-        </div>
+        <p>Loading...</p>
       </div>
     );
   }
 
-  return user ? <Dashboard /> : <LoginPage />;
+  return (
+    <Routes>
+
+      {/* Dashboard/Login page */}
+      <Route
+        path="/"
+        element={user ? <Dashboard /> : <LoginPage />}
+      />
+
+      {/* Constitution page */}
+      <Route
+        path="/ConstitutionLaw"
+        element={<ConstitutionLaw />}
+      />
+
+    </Routes>
+  );
 }
+
 
 function App() {
   return (

@@ -111,7 +111,7 @@ export default function LoginPage() {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Phone Number (Optional)</label>
+                  <label className={styles.formLabel}>Phone Number</label>
                   <input
                     type="tel"
                     value={phone}
